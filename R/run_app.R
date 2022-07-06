@@ -13,6 +13,9 @@ run_app <- function(
   enableBookmarking = NULL,
   uiPattern = "/",
   baseUrl,
+  authMethod = NULL,
+  webApiUsername = NULL,
+  webApiPassword = NULL,
   connection,
   cdmDbSchema,
   vocabularyDatabaseSchema,
@@ -29,8 +32,10 @@ run_app <- function(
     ),
     golem_opts = list(
       baseUrl = baseUrl,
+      authMethod = authMethod,
+      webApiUsername = webApiUsername,
+      webApiPassword = webApiPassword,
       connection = connection,
-      # connectionDetails = connectionDetails,
       cdmDbSchema = cdmDbSchema,
       vocabularyDatabaseSchema = vocabularyDatabaseSchema,
       cohortTable = cohortTable
