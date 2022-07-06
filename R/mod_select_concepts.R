@@ -35,7 +35,7 @@ mod_select_concepts_ui <- function(id, conceptSetList, selectedItems){
 #' select_concepts Server Functions
 #'
 #' @noRd
-mod_select_concepts_server <- function(id, conceptSetList, baseUrl){
+mod_select_concepts_server <- function(id, conceptSetList){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 

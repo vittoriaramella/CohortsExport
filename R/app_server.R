@@ -7,21 +7,13 @@
 app_server <- function(input, output, session) {
 
   baseUrl = golem::get_golem_options("baseUrl")
+  authMethod = golem::get_golem_options("authMethod")
+  webApiUsername = golem::get_golem_options("webApiUsername")
+  webApiPassword = golem::get_golem_options("webApiPassword")
   connection = golem::get_golem_options("connection")
-  # connectionDetails = golem::get_golem_options("connectionDetails")
   cdmDbSchema = golem::get_golem_options("cdmDbSchema")
   vocabularyDatabaseSchema = golem::get_golem_options("vocabularyDatabaseSchema")
   cohortTable = golem::get_golem_options("cohortTable")
-
-  # # connection <- DatabaseConnector::connect(connectionDetails = connectionDetails)
-  # connectionDetails <- DatabaseConnector::createConnectionDetails(dbms = "postgresql",
-  #                                                                 user = "cdm1",
-  #                                                                 password = "biom_demo_cdm1",
-  #                                                                 server = "54.77.2.157/OMOP",
-  #                                                                 port = 5432,
-  #                                                                 pathToDriver = "/Users/vramella/R/drivers")
-  #
-  # connection <- DatabaseConnector::connect(connectionDetails = connectionDetails)
 
   session$onSessionEnded(function() {
     DatabaseConnector::disconnect(connection)
@@ -52,12 +44,35 @@ app_server <- function(input, output, session) {
   )
 
   # Get list of ATLAS Cohorts and update pickerInput
+  cohortDefinitionsList <- tryCatch(getCohortDefinitionsList(baseUrl = baseUrl),
+                                    error = function(e) {
+                                      if(grepl("http error 401", e)) {
+                                        ROhdsiWebApi::authorizeWebApi(baseUrl,
+                                                                      authMethod = authMethod,
+                                                                      webApiUsername = webApiUsername,
+                                                                      webApiPassword = webApiPassword)
+                                        getCohortDefinitionsList(baseUrl = baseUrl)
+                                      } else {
+                                        stop(e)
+                                      }
+                                    })
   shinyWidgets::updatePickerInput(session,
                                   inputId = "cohort_menu",
-                                  choices = getCohortDefinitionsList(baseUrl = baseUrl))
+                                  choices = cohortDefinitionsList)
 
   # Get list of ATLAS Concept Sets
-  conceptSetList <- getConceptSetList(baseUrl = baseUrl)
+  conceptSetList <- tryCatch(getConceptSetList(baseUrl = baseUrl),
+                             error = function(e) {
+                               if(grepl("http error 401", e)) {
+                                 ROhdsiWebApi::authorizeWebApi(baseUrl,
+                                                               authMethod = authMethod,
+                                                               webApiUsername = webApiUsername,
+                                                               webApiPassword = webApiPassword)
+                                 getConceptSetList(baseUrl = baseUrl)
+                               } else {
+                                 stop(e)
+                               }
+                             })
 
   # get list of concepts from CONCEPT table
   sql <- 'SELECT * FROM @cdm.concept'
@@ -75,12 +90,28 @@ app_server <- function(input, output, session) {
         text = "Querying the Database"
       )
 
-      cohort <- getCohortTable(cohortId = as.numeric(input$cohort_menu),
-                               baseUrl = baseUrl,
-                               connection = connection,
-                               databaseSchema = cdmDbSchema,
-                               cohortTable = cohortTable,
-                               vocabularyDatabaseSchema = vocabularyDatabaseSchema)
+      cohort <- tryCatch(getCohortTable(cohortId = as.numeric(input$cohort_menu),
+                                        baseUrl = baseUrl,
+                                        connection = connection,
+                                        databaseSchema = cdmDbSchema,
+                                        cohortTable = cohortTable,
+                                        vocabularyDatabaseSchema = vocabularyDatabaseSchema),
+                         error = function(e) {
+                           if(grepl("http error 401", e)) {
+                             ROhdsiWebApi::authorizeWebApi(baseUrl,
+                                                           authMethod = authMethod,
+                                                           webApiUsername = webApiUsername,
+                                                           webApiPassword = webApiPassword)
+                             getCohortTable(cohortId = as.numeric(input$cohort_menu),
+                                            baseUrl = baseUrl,
+                                            connection = connection,
+                                            databaseSchema = cdmDbSchema,
+                                            cohortTable = cohortTable,
+                                            vocabularyDatabaseSchema = vocabularyDatabaseSchema)
+                           } else {
+                             stop(e)
+                           }
+                         })
 
       shinybusy::remove_modal_spinner()
     } else {
@@ -169,7 +200,7 @@ app_server <- function(input, output, session) {
   })
 
   # Save and print selected concept set(s)
-  concept_output <- mod_select_concepts_server("select_concepts_1", conceptSetList, baseUrl)
+  concept_output <- mod_select_concepts_server("select_concepts_1", conceptSetList)
 
   observeEvent(concept_output(), {
     rv$concept_set_output <- concept_output()
@@ -213,10 +244,44 @@ app_server <- function(input, output, session) {
       )
       conceptIds <- c()
       for (i in rv$concept_set_output) {
-        conceptSet <- ROhdsiWebApi::getConceptSetDefinition(conceptSetId = as.numeric(i), baseUrl = baseUrl)
-        conceptIds <- c(conceptIds, ROhdsiWebApi::resolveConceptSet(conceptSet = conceptSet, baseUrl = baseUrl))
+        conceptSet <- tryCatch(ROhdsiWebApi::getConceptSetDefinition(conceptSetId = as.numeric(i), baseUrl = baseUrl),
+                               error = function(e) {
+                                 if(grepl("http error 401", e)) {
+                                   ROhdsiWebApi::authorizeWebApi(baseUrl,
+                                                                 authMethod = authMethod,
+                                                                 webApiUsername = webApiUsername,
+                                                                 webApiPassword = webApiPassword)
+                                   ROhdsiWebApi::getConceptSetDefinition(conceptSetId = as.numeric(i), baseUrl = baseUrl)
+                                 } else {
+                                   stop(e)
+                                 }
+                               })
+        resolvedConceptSet <- tryCatch(ROhdsiWebApi::resolveConceptSet(conceptSet = conceptSet, baseUrl = baseUrl),
+                                       error = function(e) {
+                                         if(grepl("http error 401", e)) {
+                                           ROhdsiWebApi::authorizeWebApi(baseUrl,
+                                                                         authMethod = authMethod,
+                                                                         webApiUsername = webApiUsername,
+                                                                         webApiPassword = webApiPassword)
+                                           ROhdsiWebApi::resolveConceptSet(conceptSet = conceptSet, baseUrl = baseUrl)
+                                         } else {
+                                           stop(e)
+                                         }
+                                       })
+        conceptIds <- c(conceptIds, resolvedConceptSet)
       }
-      concept <- ROhdsiWebApi::getConcepts(conceptIds = conceptIds, baseUrl = baseUrl)
+      concept <- tryCatch(ROhdsiWebApi::getConcepts(conceptIds = conceptIds, baseUrl = baseUrl),
+                          error = function(e) {
+                            if(grepl("http error 401", e)) {
+                              ROhdsiWebApi::authorizeWebApi(baseUrl,
+                                                            authMethod = authMethod,
+                                                            webApiUsername = webApiUsername,
+                                                            webApiPassword = webApiPassword)
+                              ROhdsiWebApi::getConcepts(conceptIds = conceptIds, baseUrl = baseUrl)
+                            } else {
+                              stop(e)
+                            }
+                          })
       shinybusy::remove_modal_spinner()
     }
 
