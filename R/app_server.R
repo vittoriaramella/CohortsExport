@@ -75,9 +75,9 @@ app_server <- function(input, output, session) {
                              })
 
   # get list of concepts from CONCEPT table
-  sql <- 'SELECT * FROM @cdm.concept'
-  concept <- DatabaseConnector::renderTranslateQuerySql(connection = connection, sql = sql, cdm = cdmDbSchema) %>%
-    dplyr::select(., c('CONCEPT_ID', 'CONCEPT_NAME'))
+  # sql <- 'SELECT * FROM @cdm.concept'
+  # concept <- DatabaseConnector::renderTranslateQuerySql(connection = connection, sql = sql, cdm = cdmDbSchema) %>%
+  #   dplyr::select(., c('CONCEPT_ID', 'CONCEPT_NAME'))
 
   # Remove modal spinner when initial settings are done
   shinybusy::remove_modal_spinner()
