@@ -10,7 +10,7 @@ getTableList <- function(connection, databaseSchema) {
     tableFields <- DatabaseConnector::dbListFields(conn = connection,
                                                    name = i)
 
-    if("PERSON_ID" %in% tableFields)
+    if("PERSON_ID" %in% toupper(tableFields))
       tableList <- c(tableList, i)
   }
 
