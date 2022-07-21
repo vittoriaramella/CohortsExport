@@ -68,11 +68,6 @@ app_server <- function(input, output, session) {
                                }
                              })
 
-  # get list of concepts from CONCEPT table
-  # sql <- 'SELECT * FROM @cdm.concept'
-  # concept <- DatabaseConnector::renderTranslateQuerySql(connection = connection, sql = sql, cdm = cdmDbSchema) %>%
-  #   dplyr::select(., c('CONCEPT_ID', 'CONCEPT_NAME'))
-
   # Remove modal spinner when initial settings are done
   shinybusy::remove_modal_spinner()
 
@@ -363,17 +358,23 @@ app_server <- function(input, output, session) {
   # Get filtered table
   data_filter <- eventReactive(input$filter, {
     removeModal()
+    shinybusy::show_modal_spinner(
+      spin = "circle",
+      text = "Please Wait"
+    )
     l <- vector(mode = "list", length = length(input$cdmTable))
     names(l) <- input$cdmTable
     for (i in input$cdmTable) {
       if(length(rv$concept_set_output)){
         l[[i]] <- getPLData(connection, input[[paste0("checkboxID_", i)]], cdmDbSchema, i, cohort()$SUBJECT_ID, concept4filter()$conceptId, domain()) %>%
-          getConceptNamesFromId(., concept)
+          getConceptNamesFromId(., connection, cdmDbSchema)
+
       } else {
         l[[i]] <- getPLData(connection, input[[paste0("checkboxID_", i)]], cdmDbSchema, i, cohort()$SUBJECT_ID) %>%
-          getConceptNamesFromId(., concept)
+          getConceptNamesFromId(., connection, cdmDbSchema)
       }
     }
+    shinybusy::remove_modal_spinner()
     return(l)
   })
 

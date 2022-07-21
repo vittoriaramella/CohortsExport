@@ -4,7 +4,7 @@ getPLData <- function(connection, columns, databaseSchema, table, personId, conc
   #   domain = c(domain, "OBSERVATION")
 
   if(length(conceptIds)  & table %in% domain){
-    columnName =  grep("_CONCEPT_ID", DatabaseConnector::dbListFields(connection, table), value = TRUE)[1]
+    columnName =  grep("_CONCEPT_ID", toupper(DatabaseConnector::dbListFields(connection, table)), value = TRUE)[1]
     sql <- paste0('SELECT ', paste(columns, collapse = ", ") ,' FROM @cdm.@cdm_table WHERE person_id IN (@person_id) AND @column_name IN (@concept_id)')
     plData <- DatabaseConnector::renderTranslateQuerySql(connection = connection,
                                                          sql = sql,
