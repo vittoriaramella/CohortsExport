@@ -1,8 +1,8 @@
 Package: CohortsExport
-Title: Explore and Export Patient-Level Data in Cohorts from OMOP CDM Database
+Title: Export patient-level data from the OMOP CDM
 Version: 0.0.0.9000
 Authors@R: person('Vittoria', 'Ramella', email = 'vittoria.ramella@biomeris.it', role = c('cre', 'aut'))
-Description: An R package for exploring clinical data of patients entering cohorts in standardized OMOP Common Data Model data sources.
+Description: A Shiny app to explore and export data from the OMOP Common Data Model.
 License: What license is it under?
 Imports: 
     config (>= 0.3.1),
