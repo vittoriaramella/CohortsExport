@@ -27,15 +27,9 @@ app_server <- function(input, output, session) {
   )
 
   # Print source info
-  output$cdmName <- renderText({ sourceInfo$CDM_SOURCE_NAME })
-  output$sourceDescription <- renderText({ sourceInfo$SOURCE_DESCRIPTION })
-  output$cdmHolder <- renderText({ sourceInfo$CDM_HOLDER })
-  output$sourceReleased <- renderText({ as.character(sourceInfo$SOURCE_RELEASE_DATE) })
-  output$cdmReleased <- renderText({ as.character(sourceInfo$CDM_RELEASE_DATE) })
-  output$cdmVersion <- renderText({ sourceInfo$CDM_VERSION })
-  output$vocabularyVersion <- renderText({ sourceInfo$VOCABULARY_VERSION })
-  output$sourceRef <- renderText({ sourceInfo$SOURCE_DOCUMENTATION_REFERENCE })
-  output$etlRef <- renderText({ sourceInfo$CDM_ETL_REFERENCE })
+  output$dataInfo <- DT::renderDataTable({
+    DT::datatable(sourceInfo, options = list(scrollX = TRUE, scrollCollapse = TRUE), rownames = FALSE)
+  })
 
   # Modal spinner while waiting for initial settings
   shinybusy::show_modal_spinner(

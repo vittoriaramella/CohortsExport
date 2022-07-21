@@ -33,12 +33,14 @@ golem::document_and_reload()
 #         cohortTable = 'cohort')
 
 # Run the application with cdm1 demo and BIOMERIS demo ATLAS
+pathToDriver <- "/Users/vramella/R/drivers"
+
 connectionDetails <- DatabaseConnector::createConnectionDetails(dbms = "postgresql",
                                                                 user = Sys.getenv("CDM_USERNAME"),
                                                                 password = Sys.getenv("CDM_PASSWORD"),
                                                                 server = "54.77.2.157/OMOP",
                                                                 port = 5432,
-                                                                pathToDriver = "/Users/vramella/R/drivers")
+                                                                pathToDriver = pathToDriver)
 
 connection <- DatabaseConnector::connect(connectionDetails = connectionDetails)
 

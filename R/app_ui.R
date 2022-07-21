@@ -116,9 +116,7 @@ app_ui <- function(request) {
                       div(strong("Filter Rows (optional)"), style = "color: #337ab7"),
                       p("You can select one or more CONCEPT SETS to filter rows."),
                       actionButton(inputId = "filter_conceptset", label = "Add Filter", icon = icon("plus"), style = "color: #fff; background-color: #57AF55; border-color: #3b843a"),
-                      # actionButton(inputId = "filter_conceptset", label = "Add", icon = icon("plus"), style = "color: #fff; background-color: #337ab7; border-color: #2e6da4"),
                       shinyjs::disabled(actionButton(inputId = "remove_filter", label = "Remove", icon = icon("trash"), style = "color: #fff; background-color: #d04a46; border-color: #ad2825")),
-                      # shinyjs::disabled(actionButton(inputId = "remove_filter", label = "Remove", icon = icon("trash"))),
                       # fluidRow(
                       #   br(),
                       #   column(
@@ -163,15 +161,7 @@ app_ui <- function(request) {
                   br(),
                   div(h3(strong("Data Source Information")), style = "color: #337ab7"),
                   br(),
-                  div(h4(textOutput(outputId = "cdmName"))),
-                  div(h4(textOutput(outputId = "sourceDescription")), style = "width: 75%"),
-                  div(h4("Licensed to: ", textOutput(outputId = "cdmHolder", inline = TRUE))),
-                  div(h4("Source Released: ", textOutput(outputId = "sourceReleased", inline = TRUE))),
-                  div(h4("CDM Released: ", textOutput(outputId = "cdmReleased", inline = TRUE))),
-                  div(h4("CDM Version: ", textOutput(outputId = "cdmVersion", inline = TRUE))),
-                  div(h4("Vocabulary Version: ", textOutput(outputId = "vocabularyVersion", inline = TRUE))),
-                  div(h4("Source Documentation: ", textOutput(outputId = "sourceRef", inline = TRUE))),
-                  div(h4("ETL Reference: ", textOutput(outputId = "etlRef", inline = TRUE)))
+                  DT::dataTableOutput(outputId = "dataInfo")
           )
 
         )
