@@ -117,19 +117,6 @@ app_ui <- function(request) {
                       p("You can select one or more CONCEPT SETS to filter rows."),
                       actionButton(inputId = "filter_conceptset", label = "Add Filter", icon = icon("plus"), style = "color: #fff; background-color: #57AF55; border-color: #3b843a"),
                       shinyjs::disabled(actionButton(inputId = "remove_filter", label = "Remove", icon = icon("trash"), style = "color: #fff; background-color: #d04a46; border-color: #ad2825")),
-                      # fluidRow(
-                      #   br(),
-                      #   column(
-                      #     width = 12,
-                      #     p("Filter OBSERVATION Table?"),
-                      #     shinyWidgets::switchInput(
-                      #       inputId = "filter_observation",
-                      #       onLabel = "Yes",
-                      #       offLabel = "No",
-                      #       size = "mini",
-                      #       disabled = FALSE
-                      #     )
-                      # )),
                       tableOutput("concept_sets"),
                       hr(style = "border-top: 1px solid #DCDCDC;"),
                       shinyjs::disabled(actionButton(inputId = "preview", label = "Preview", icon = icon("search"), style = "color: #fff; background-color: #337ab7; border-color: #2e6da4"))
@@ -159,7 +146,7 @@ app_ui <- function(request) {
                   h1(strong("Data Info")),
                   br(),
                   br(),
-                  div(h3(strong("Data Source Information")), style = "color: #337ab7"),
+                  div(h3(strong("Data Sources Information")), style = "color: #337ab7"),
                   br(),
                   DT::dataTableOutput(outputId = "dataInfo")
           )
@@ -192,7 +179,6 @@ golem_add_external_resources <- function() {
     ),
     # Add here other external resources
     # for example, you can add shinyalert::useShinyalert()
-    # shinyalert::useShinyalert(),
     shinyjs::useShinyjs()
   )
 }

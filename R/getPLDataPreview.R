@@ -1,7 +1,4 @@
-getPLDataPreview <- function(connection, databaseSchema, table, personId, conceptIds = c(), domain = c(), filterObservation = FALSE){
-  # if filterObservation is TRUE, add OBSERVATION to the list of tables to filter
-  # if(filterObservation & !("OBSERVATION" %in% domain))
-  #   domain = c(domain, "OBSERVATION")
+getPLDataPreview <- function(connection, databaseSchema, table, personId, conceptIds = c(), domain = c()){
 
   if(length(conceptIds)  & table %in% domain){
     columnName =  grep("_CONCEPT_ID", toupper(DatabaseConnector::dbListFields(connection, table)), value = TRUE)[1]
